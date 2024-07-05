@@ -1,25 +1,38 @@
-import logo from './logo.svg';
+// App.js
+import React from 'react';
 import './App.css';
+import useApi from './useApi';
 
 function App() {
+  const { data: allData, isLoading: loadingData, error: errorData, isValidating, mutate } = useApi({
+    url: 'https://jsonplaceholder.typicode.com/todos/',
+    options: {
+      revalidateOnMount: false,
+       // Prevent automatic fetch on mount
+    }
+  });
+
+  const onSubmit = () => {
+    mutate();
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Todo List</h1>
+      <button onClick={onSubmit}>Fetch Todos</button>
+      {loadingData && <p>Loading...</p>}
+      {errorData && <p>Error: {errorData.message}</p>}
+      {isValidating && <p>Validating...</p>}
+      {allData && (
+        <ul>
+          {allData.map(todo => (
+            <li key={todo.id}>{todo.title}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
 
 export default App;
+
